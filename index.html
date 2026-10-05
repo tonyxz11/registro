@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ledger — Gestão de Dívidas</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#101828;--muted:#667085;--line:#e4e7ec;--blue:#155eef;--dark:#101828;--green:#079455;--red:#d92d20}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}.app{min-height:100vh;display:flex}.side{width:245px;background:#0b1220;color:#fff;padding:24px 15px;display:flex;flex-direction:column}.brand{font-size:22px;font-weight:800;padding:8px 12px 28px}.brand i{color:#6ea8fe;font-style:normal}.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:#aeb8c8;padding:12px 14px;text-align:left;border-radius:9px;cursor:pointer}.nav button.active,.nav button:hover{background:#182234;color:#fff}.foot{margin-top:auto;color:#667085;font-size:11px;padding:12px}
+main{width:100%;max-width:1450px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}h1{margin:0;font-size:29px;letter-spacing:-1px}.sub{color:var(--muted);margin-top:5px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff;box-shadow:0 5px 15px #155eef25}.secondary{background:#fff;color:#344054;border:1px solid var(--line)}.danger{color:var(--red)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 16px #10182808}.card{padding:19px}.label{color:var(--muted);font-size:12px}.value{font-size:24px;font-weight:800;margin-top:9px}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}
+.panel{padding:20px}.panel h2{font-size:17px;margin:0 0 16px}.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}.table-wrap{overflow:auto}.table{border-collapse:collapse;width:100%;min-width:720px}.table th,.table td{padding:13px 8px;border-bottom:1px solid #eef0f3;text-align:left;font-size:12px}.table th{color:var(--muted);font-weight:650}.badge{border-radius:99px;padding:5px 8px;font-size:10px;font-weight:800}.bgreen{background:#ecfdf3;color:#067647}.bred{background:#fef3f2;color:#b42318}.bblue{background:#eff8ff;color:#175cd3}.actions{display:flex;gap:6px}.mini{border:1px solid var(--line);background:#fff;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:11px}
+.empty{text-align:center;color:#98a2b3;padding:32px}.summary{line-height:2.1;color:#475467}
+.modal{position:fixed;inset:0;background:#080d17b8;z-index:20;display:none;align-items:center;justify-content:center;padding:16px}.modal.open{display:flex}.box{background:#fff;border-radius:18px;width:min(760px,100%);max-height:94vh;overflow:auto;padding:24px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.x{border:0;background:#f2f4f7;border-radius:8px;padding:8px;cursor:pointer}.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:grid;gap:6px}.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#475467}.field input,.field select,.field textarea{border:1px solid #d0d5dd;border-radius:9px;padding:11px;outline:0;background:#fff}.field textarea{min-height:75px}.formfoot{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.sig-modal{position:fixed;inset:0;background:#fff;z-index:50;display:none;flex-direction:column}.sig-modal.open{display:flex}.sig-top{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.sig-title{font-weight:800}.sig-body{padding:18px;overflow:auto;flex:1;max-width:900px;width:100%;margin:auto}.agreement{background:#f8fafc;border:1px solid var(--line);padding:16px;border-radius:12px;line-height:1.65;margin-bottom:16px}.agreement strong{font-weight:800}.signature-pad{height:260px;border:2px solid #98a2b3;border-radius:12px;background:#fff;touch-action:none;display:block;width:100%;cursor:crosshair}.sig-actions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}.camera{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.camera-box{border:1px solid var(--line);border-radius:12px;padding:12px}.camera video,.camera img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:9px;background:#0b1220}.camera img{display:none}.hint{font-size:11px;color:var(--muted);margin-top:7px}.confirm{margin-top:17px;background:#f8fafc;border:1px solid var(--line);padding:13px;border-radius:10px}.checkline{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.5}.sig-footer{padding:13px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px;background:#fff}
+.doc{background:#fff;border:1px solid #ddd;padding:30px;line-height:1.65}.doc h2{text-align:center}.doc .sigimg{max-width:320px;max-height:150px}.doc .selfie{width:180px;border-radius:8px}
+@media(max-width:950px){.side{width:205px}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+@media(max-width:650px){.app{display:block}.side{width:100%;padding:10px;position:sticky;top:0;z-index:5}.brand{padding:6px 8px 10px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;padding:9px 12px}.foot{display:none}main{padding:17px}.top{align-items:flex-start;gap:10px}.top .btn{padding:10px}.cards{gap:9px}.card{padding:14px}.value{font-size:19px}.form{grid-template-columns:1fr}.full{grid-column:auto}.camera{grid-template-columns:1fr}.sig-body{padding:12px}.signature-pad{height:220px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side"><div class="brand">Ledger<i>.</i></div><div class="nav">
+<button class="active">Dashboard</button><button>Receber</button><button>Pagar</button><button>Pessoas</button><button>Documentos</button>
+</div><div class="foot">Gestão financeira • versão local</div></aside>
+<main>
+<div class="top"><div><h1>Visão geral</h1><div class="sub">Controle de empréstimos, pagamentos e documentos.</div></div><button class="btn primary" id="newBtn">+ Nova dívida</button></div>
+<div class="cards">
+<div class="card"><div class="label">Tenho a receber</div><div class="value green" id="rec">R$ 0,00</div></div>
+<div class="card"><div class="label">Tenho a pagar</div><div class="value red" id="pay">R$ 0,00</div></div>
+<div class="card"><div class="label">Registros</div><div class="value blue" id="qty">0</div></div>
+<div class="card"><div class="label">Em atraso</div><div class="value" id="late">0</div></div>
+</div>
+<div class="grid">
+<section class="panel"><h2>Registros</h2><div class="table-wrap"><table class="table"><thead><tr><th>Pessoa</th><th>Tipo</th><th>Valor</th><th>Vencimento</th><th>Documento</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel"><h2>Documentação</h2><div class="summary" id="summary">Nenhum registro ainda.<br>Ao cadastrar uma dívida, você poderá abrir um fluxo separado para <b>assinatura + selfie + PDF</b>.</div></section>
+</div>
+</main></div>
+
+<!-- Cadastro -->
+<div class="modal" id="debtModal"><div class="box">
+<div class="head"><h2>Nova dívida</h2><button class="x" id="closeDebt">✕</button></div>
+<form id="debtForm"><div class="form">
+<div class="field"><label>Tipo</label><select id="type"><option value="receber">Tenho a receber</option><option value="pagar">Tenho a pagar</option></select></div>
+<div class="field"><label>Nome completo da pessoa</label><input id="person" required placeholder="Carlos Miguel da Silva"></div>
+<div class="field"><label>Valor original (R$)</label><input id="amount" type="number" min="0" step=".01" required></div>
+<div class="field"><label>Data do empréstimo</label><input id="loanDate" type="date" required></div>
+<div class="field"><label>Vencimento</label><input id="dueDate" type="date"></div>
+<div class="field"><label>Juros</label><select id="interestType"><option value="none">Sem juros</option><option value="monthly">Por mês (%)</option><option value="daily">Por dia (%)</option></select></div>
+<div class="field"><label>Taxa (%)</label><input id="rate" type="number" min="0" step=".01" value="0"></div>
+<div class="field"><label>Multa por atraso (%)</label><input id="fine" type="number" min="0" step=".01" value="0"></div>
+<div class="field full"><label>Observações</label><textarea id="notes" placeholder="Finalidade, condições ou outras informações."></textarea></div>
+</div><div class="formfoot"><button type="button" class="btn secondary" id="cancelDebt">Cancelar</button><button class="btn primary">Salvar e formalizar</button></div></form>
+</div></div>
+
+<!-- Fluxo de assinatura -->
+<div class="sig-modal" id="signModal">
+<div class="sig-top"><div><div class="sig-title">Formalização da dívida</div><div class="hint">Assinatura e identificação da pessoa</div></div><button class="x" id="closeSign">✕</button></div>
+<div class="sig-body">
+<div class="agreement" id="agreement"></div>
+<div><b>1. Assinatura do devedor</b><div class="hint">Peça para a pessoa assinar dentro do quadro usando o dedo.</div></div>
+<canvas class="signature-pad" id="sigPad"></canvas>
+<div class="sig-actions"><button class="btn secondary" id="clearSig">Limpar assinatura</button></div>
+<div class="camera">
+<div class="camera-box"><b>2. Selfie</b><div class="hint">A câmera frontal será usada para registrar uma foto no documento.</div><video id="video" autoplay playsinline muted></video><button class="btn primary" id="takePhoto" style="margin-top:9px;width:100%">Tirar selfie</button></div>
+<div class="camera-box"><b>Foto capturada</b><div class="hint">Essa imagem será incorporada ao PDF.</div><img id="photo" alt="Selfie capturada"><canvas id="photoCanvas" style="display:none"></canvas></div>
+</div>
+<div class="confirm"><label class="checkline"><input type="checkbox" id="confirmCheck"> <span>Confirmo que os dados acima foram conferidos e que a pessoa assinou este documento de forma consciente.</span></label></div>
+</div>
+<div class="sig-footer"><button class="btn secondary" id="cancelSign">Cancelar</button><button class="btn primary" id="generate">Assinar e gerar PDF</button></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id), KEY="ledger_v2";
+let debts=JSON.parse(localStorage.getItem(KEY)||"[]"), current=null, stream=null, selfieData="";
+const money=v=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function days(a,b){return Math.max(0,(new Date(b)-new Date(a))/86400000)}
+function updated(d){let v=+d.amount,j=0,n=days(d.loanDate,new Date());if(d.interestType==="monthly")j=v*(+d.rate/100)*(n/30);if(d.interestType==="daily")j=v*(+d.rate/100)*n;let f=d.dueDate&&new Date(d.dueDate)<new Date()?v*(+d.fine/100):0;return v+j+f}
+function persist(){localStorage.setItem(KEY,JSON.stringify(debts));render()}
+function render(){
+ let r=debts.filter(x=>x.type==="receber").reduce((a,x)=>a+updated(x),0),p=debts.filter(x=>x.type==="pagar").reduce((a,x)=>a+updated(x),0),l=debts.filter(x=>x.dueDate&&new Date(x.dueDate)<new Date()).length;
+ $("rec").textContent=money(r);$("pay").textContent=money(p);$("qty").textContent=debts.length;$("late").textContent=l;
+ $("rows").innerHTML=debts.length?debts.slice().reverse().map(d=>`<tr><td><b>${esc(d.person)}</b></td><td><span class="badge ${d.type==="receber"?"bgreen":"bred"}">${d.type==="receber"?"A receber":"A pagar"}</span></td><td><b>${money(updated(d))}</b><br><small>${money(d.amount)} original</small></td><td>${d.dueDate?new Date(d.dueDate+"T12:00").toLocaleDateString("pt-BR"):"—"}</td><td>${d.pdf?'<span class="badge bblue">PDF salvo</span>':'<span class="badge bred">Pendente</span>'}</td><td class="actions"><button class="mini" onclick="openSigning('${d.id}')">${d.pdf?"Refazer":"Assinar"}</button>${d.pdf?`<button class="mini" onclick="viewPdf('${d.id}')">PDF</button>`:""}<button class="mini danger" onclick="delDebt('${d.id}')">Excluir</button></td></tr>`).join(""):'<tr><td colspan="6" class="empty">Nenhuma dívida cadastrada.</td></tr>';
+ $("summary").innerHTML=debts.length?`<b>${debts.length}</b> registro(s)<br><span class="green">${money(r)}</span> a receber<br><span class="red">${money(p)}</span> a pagar<br><b>${debts.filter(x=>x.pdf).length}</b> documento(s) formalizado(s).`:"Nenhum registro ainda.<br>Ao cadastrar uma dívida, você poderá abrir um fluxo separado para <b>assinatura + selfie + PDF</b>.";
+}
+$("newBtn").onclick=()=>{$("debtModal").classList.add("open");$("loanDate").value=new Date().toISOString().slice(0,10)}
+$("closeDebt").onclick=$("cancelDebt").onclick=()=>{$("debtModal").classList.remove("open")};
+$("debtForm").onsubmit=e=>{e.preventDefault();let d={id:crypto.randomUUID(),type:$("type").value,person:$("person").value.trim(),amount:+$("amount").value,loanDate:$("loanDate").value,dueDate:$("dueDate").value,interestType:$("interestType").value,rate:+$("rate").value,fine:+$("fine").value,notes:$("notes").value,pdf:null};debts.push(d);persist();$("debtModal").classList.remove("open");openSigning(d.id);$("debtForm").reset()};
+window.delDebt=id=>{if(confirm("Excluir esta dívida e o documento associado?")){debts=debts.filter(d=>d.id!==id);persist()}};
+window.openSigning=id=>{current=debts.find(d=>d.id===id);if(!current)return;selfieData=current.selfie||"";setupAgreement();$("signModal").classList.add("open");setTimeout(resizePad,50);startCamera()};
+function setupAgreement(){let d=current,owner="Antônio Pedro Ribeiro Neto";$("agreement").innerHTML=`Eu, <strong>${esc(d.person)}</strong>, confirmo que ${d.type==="receber"?"peguei":"reconheço como obrigação"} o valor de <strong>${money(d.amount)}</strong> com <strong>${esc(owner)}</strong>, referente a um empréstimo realizado em <strong>${new Date(d.loanDate+"T12:00").toLocaleDateString("pt-BR")}</strong>${d.dueDate?`, com vencimento em <strong>${new Date(d.dueDate+"T12:00").toLocaleDateString("pt-BR")}</strong>`:""}${d.interestType!=="none"?`, sujeito à taxa informada no cadastro`:""}, conforme as condições registradas neste sistema. Este documento registra a declaração e a assinatura realizadas nesta sessão.`}
+$("closeSign").onclick=$("cancelSign").onclick=closeSign;
+function closeSign(){stopCamera();$("signModal").classList.remove("open");current=null;selfieData=""}
+const pad=$("sigPad"),ctx=pad.getContext("2d");let drawing=false;
+function resizePad(){let r=pad.getBoundingClientRect(),ratio=devicePixelRatio||1;pad.width=r.width*ratio;pad.height=r.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=2.2;ctx.lineCap="round";ctx.strokeStyle="#111827"}
+addEventListener("resize",resizePad);
+function pos(e){let r=pad.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}}
+function down(e){e.preventDefault();drawing=true;let p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}
+function move(e){if(!drawing)return;e.preventDefault();let p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()}
+function up(){drawing=false}
+pad.onmousedown=down;pad.onmousemove=move;addEventListener("mouseup",up);pad.ontouchstart=down;pad.ontouchmove=move;pad.ontouchend=up;
+$("clearSig").onclick=()=>ctx.clearRect(0,0,pad.width,pad.height);
+
+async function startCamera(){try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});$("video").srcObject=stream;if(selfieData){$("photo").src=selfieData;$("photo").style.display="block"}}catch(e){console.warn("Câmera indisponível",e)}}
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+$("takePhoto").onclick=()=>{let v=$("video"),c=$("photoCanvas");c.width=v.videoWidth||640;c.height=v.videoHeight||480;c.getContext("2d").drawImage(v,0,0,c.width,c.height);selfieData=c.toDataURL("image/jpeg",.88);$("photo").src=selfieData;$("photo").style.display="block"};
+
+$("generate").onclick=async()=>{
+ if(!current)return;
+ if(!$("confirmCheck").checked){alert("Marque a confirmação antes de gerar o documento.");return}
+ let image=pad.toDataURL("image/png");
+ if(!image || image.length<1000){alert("Faça a assinatura no quadro antes de continuar.");return}
+ if(!selfieData){alert("Tire a selfie antes de continuar.");return}
+ const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"});
+ const d=current,owner="Antônio Pedro Ribeiro Neto",now=new Date();
+ doc.setFont("helvetica","bold");doc.setFontSize(18);doc.text("TERMO DE RECONHECIMENTO DE DÍVIDA",105,22,{align:"center"});
+ doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text("Documento gerado pelo Ledger",105,29,{align:"center"});
+ doc.setDrawColor(220);doc.line(18,35,192,35);
+ let y=47;doc.setFontSize(11);
+ const text=`Eu, ${d.person}, confirmo que ${d.type==="receber"?"peguei":"reconheço como obrigação"} o valor de ${money(d.amount)} com ${owner}, referente a um empréstimo realizado em ${new Date(d.loanDate+"T12:00").toLocaleDateString("pt-BR")}${d.dueDate?`, com vencimento em ${new Date(d.dueDate+"T12:00").toLocaleDateString("pt-BR")}`:""}.`;
+ const lines=doc.splitTextToSize(text,174);doc.text(lines,18,y);y+=lines.length*6+7;
+ let cond=`Valor original: ${money(d.amount)} | Valor atualizado no sistema: ${money(updated(d))}.`;
+ if(d.interestType!=="none")cond+=` Juros: ${d.rate}% ${d.interestType==="monthly"?"ao mês":"ao dia"}.`;
+ doc.text(doc.splitTextToSize(cond,174),18,y);y+=14;
+ if(d.notes){doc.text("Observações:",18,y);y+=6;doc.text(doc.splitTextToSize(d.notes,174),18,y);y+=12}
+ doc.setFont("helvetica","bold");doc.text("Identificação e evidências da formalização",18,y);y+=9;doc.setFont("helvetica","normal");
+ doc.text("Data e hora da assinatura: "+now.toLocaleString("pt-BR"),18,y);y+=8;
+ doc.text("Pessoa que assinou: "+d.person,18,y);y+=10;
+ doc.setFont("helvetica","bold");doc.text("Assinatura",18,y);y+=3;doc.addImage(image,"PNG",18,y,80,38);doc.setDrawColor(180);doc.rect(18,y,80,38);y+=47;
+ doc.setFont("helvetica","bold");doc.text("Selfie registrada no momento da assinatura",112,y-44);doc.addImage(selfieData,"JPEG",112,y-40,65,49);doc.rect(112,y-40,65,49);
+ doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("A selfie é incluída como registro visual da sessão de formalização.",112,y+13,{maxWidth:70});
+ doc.setFontSize(8);doc.text("Este arquivo é um registro digital. A validade jurídica de assinaturas e documentos pode depender do método de assinatura, consentimento, autenticidade e legislação aplicável.",18,276,{maxWidth:174});
+ const blob=doc.output("blob"),url=URL.createObjectURL(blob);
+ d.pdf=await blobToData(blob);d.signature=image;d.selfie=selfieData;d.signedAt=now.toISOString();persist();
+ const a=document.createElement("a");a.href=url;a.download="termo_"+d.person.replace(/[^a-z0-9]+/gi,"_").toLowerCase()+".pdf";a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+ alert("Documento gerado e vinculado à dívida.");closeSign();
+};
+function blobToData(blob){return new Promise(r=>{let fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(blob)})}
+window.viewPdf=id=>{let d=debts.find(x=>x.id===id);if(!d?.pdf)return;let a=document.createElement("a");a.href=d.pdf;a.download="termo_"+d.person.replace(/[^a-z0-9]+/gi,"_").toLowerCase()+".pdf";a.click()};
+render();
+</script>
+</body>
+</html>
